@@ -26,3 +26,14 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+// TODO: 1 - ADD THE VERSION NUMBERS
+
+// Add version number
+
+ext {
+    roomVersion = '2.1.0-alpha07'
+    archLifecycleVersion = '2.2.0-alpha01'
+    androixArchVersion = '2.0.0'
+    coroutines = '1.2.0'
+}
