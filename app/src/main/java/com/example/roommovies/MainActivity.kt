@@ -5,6 +5,9 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.roommovies.Ui.MovieListAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -14,6 +17,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        // TODO: 1 - ADD RecyclerView IN THE create() METHOD OF MainActivity
+        // Add RecyclerView
+        // Find RecyclerView
+        val recyclerView = findViewById<RecyclerView>(R.id.recycleviewMovie)
+        // create a val adapter and pass the context like parameter to the adapter MovieListAdapter
+        val adapter = MovieListAdapter(this)
+        // Add the adapter to the recyclerView
+        recyclerView.adapter = adapter
+        // Set LayoutManager to recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
