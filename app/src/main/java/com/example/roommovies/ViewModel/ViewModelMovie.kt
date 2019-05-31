@@ -30,13 +30,14 @@ class ViewModelMovie(application: Application) : AndroidViewModel(application) {
     private val repositoryMovie: RepositoryMovie
 
     // TODO: 3 - ADD A PRIVATE LiveData MEMBER VARIABLE TO CACHE THE LIST OF MOVIE
-    private val allMovies: LiveData<List<Movie>>
+    val allMovies: LiveData<List<Movie>>
 
 
     // TODO: 4 - CREATE A init BLOC THAT GETS A REFERENCE TO THE daoMovie FROM THE RDatabase AND CONSTRUCTS THE repositoryMovie BASED ON IT.
     init {
 
-        val movieDao = RDatabase.getDatabase(application).daoMovie()
+        // TODO: 7 - Add viewModelScope to getDatabase
+        val movieDao = RDatabase.getDatabase(application, viewModelScope).daoMovie()
 
         repositoryMovie = RepositoryMovie(movieDao)
 

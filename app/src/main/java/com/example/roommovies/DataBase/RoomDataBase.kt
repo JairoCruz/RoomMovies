@@ -4,8 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.roommovies.DataBase.Dao.DaoMovie
 import com.example.roommovies.DataBase.Entity.Movie
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Implement the Room Database
@@ -32,20 +36,23 @@ abstract class RDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: RDatabase? = null
 
-        fun getDatabase(context: Context): RDatabase {
+        // TODO: 5 - ADD PARAMETER scope: CoroutineScope
+        fun getDatabase(context: Context, scope: CoroutineScope): RDatabase {
 
             val tempInstance = INSTANCE
             if (tempInstance != null) {
                 return  tempInstance
             }
 
+            // TODO: 7 - ADD CALLBACK MovieDatabaseCallback() TO THE DATABASE BUILD SEQUENCE RIGHT BEFORE CALLING .build()
             synchronized(this) {
                 // Create database here
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     RDatabase::class.java,
                     "MovieDB"
-                ).build()
+                ).addCallback(MovieDatabaseCallback(scope))
+                    .build()
 
                 INSTANCE = instance
 
@@ -55,5 +62,37 @@ abstract class RDatabase : RoomDatabase() {
 
 
     }
+
+
+    // TODO: 6 - CREATE A CUSTOM IMPLEMENTATION OF THE RoomDatabase.Callback().
+    /**
+     * That also gets a CoroutineScope as constructor parameter.
+     * Then , you override the onOpen method to populate the database.
+     * This callback is only populate database to initialize
+     * */
+    private class  MovieDatabaseCallback(private val scope: CoroutineScope) : RoomDatabase.Callback() {
+
+        override fun onOpen(db: SupportSQLiteDatabase) {
+            super.onOpen(db)
+            INSTANCE?.let {
+                database -> scope.launch(Dispatchers.IO) {
+                populateDatabase(database.daoMovie())
+            }
+            }
+        }
+
+        // I use suspend Coroutine
+        suspend fun populateDatabase(daoMovie: DaoMovie) {
+            daoMovie.deleteAll()
+
+            var movie = Movie("Spider Man")
+            daoMovie.insert(movie)
+            movie = Movie("Matrix")
+            daoMovie.insert(movie)
+
+        }
+
+    }
+
 
 }
