@@ -1,15 +1,20 @@
 package com.example.roommovies
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.roommovies.DataBase.Entity.Movie
 import com.example.roommovies.Ui.MovieListAdapter
+import com.example.roommovies.Ui.NewMovieActivity
 import com.example.roommovies.ViewModel.ViewModelMovie
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -53,9 +58,29 @@ class MainActivity : AppCompatActivity() {
             movies?.let { adapter.setMovies(it) } })
 
 
+        // TODO: 7 - IN MainActivity, START NewMovieActivity WHEN THE USER TAPS THE FAB.
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val intent = Intent(this@MainActivity, NewMovieActivity::class.java)
+            startActivityForResult(intent, newMovieActivityRequestCode)
+        }
+    }
+
+
+    // TODO: 6 - IN MainActivity, ADD THE onActivityResult() CODE FOR THE NewMovieActivity
+    /**
+     * If the activity returns with RESULT_OK, insert the returned movie into the database by calling the insert() method
+     * of the MovieViewModel
+     * */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == newMovieActivityRequestCode && resultCode == Activity.RESULT_OK) {
+            data?.let {
+                val movie = Movie(it.getStringExtra(NewMovieActivity.EXTRA_REPLY))
+                movieViewModel.insert(movie)
+            }
+        } else {
+            Toast.makeText(applicationContext, R.string.empty_not_saved,Toast.LENGTH_LONG).show()
         }
     }
 
@@ -74,4 +99,11 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+
+    // TODO: 5 - ADD A STATIC OBJECT AS A MEMBERT OF THE MainActivity,
+    companion object {
+        const val newMovieActivityRequestCode = 1
+    }
+
 }
