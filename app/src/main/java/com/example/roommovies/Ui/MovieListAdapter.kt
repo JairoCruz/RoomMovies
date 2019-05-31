@@ -49,4 +49,10 @@ class MovieListAdapter internal constructor(context: Context) : RecyclerView.Ada
        val moviewItemView: TextView = itemView.findViewById(R.id.textViewMovie)
    }
 
+    // Add a fun setMovies for populate the LiveData Movie
+    internal fun setMovies(movies: List<Movie>){
+        this.movie = movies
+        notifyDataSetChanged()
+    }
+
 }
